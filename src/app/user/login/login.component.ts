@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 @Component({
   selector: 'app-login',
@@ -8,25 +9,37 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 })
 export class LoginComponent {
 
-  loginForm = new FormGroup({
-    email: new FormControl('', [
-      Validators.required,
-      Validators.email
-    ]),
+  constructor(private auth: AngularFireAuth){}
 
-    password: new FormControl('', [
-      Validators.required
-    ]),
-  })
+  loginForm = new FormGroup({
+    email: new FormControl<string>('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.email]
+    }),
+
+    password: new FormControl<string>('', {
+      nonNullable: true,
+      validators: [Validators.required]
+    }),
+  });
+
 
   showAlert = false
-  alertMsg = ''
+  alertMsg = 'Please wait! We are logging you in.'
   alertColor = 'blue'
+  inSubmission = false
 
-  login(){
+  async login(){
     this.showAlert = true
     this.alertMsg = 'Please wait! Login...'
     this.alertColor = 'blue'
+
+    try {
+      await this.auth.signInWithEmailAndPassword(
+        this.loginForm.controls.email.value, this.loginForm.controls.password.value);
+    } catch (e) {
+
+    }
   }
 
 }
