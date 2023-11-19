@@ -2,15 +2,16 @@ import { Component } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
 import IUser from 'src/app/models/user.model';
+import { RegisterValidators } from '../validators/register-validators';
+import { EmailTaken } from '../validators/email-taken';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
-
 export class RegisterComponent {
 
-  constructor(private auth: AuthService){}
+  constructor(private auth: AuthService, private emailTaken: EmailTaken){}
 
   inSubmition = false;
 
@@ -23,7 +24,7 @@ export class RegisterComponent {
       email: new FormControl('', [
         Validators.required,
         Validators.email
-      ]),
+      ], [this.emailTaken.validate]),
 
       age: new FormControl<number | null>(null, [
         Validators.required,
@@ -42,9 +43,12 @@ export class RegisterComponent {
 
       phoneNumber: new FormControl('', [
         Validators.required,
-        Validators.minLength(14)
+        Validators.minLength(14),
+        Validators.maxLength(14)
       ])
-  })
+
+      // Factory design applicabile a diversi campi
+  }, [RegisterValidators.match('password', 'confirm_password')])
 
   showAlert = false
   alertMsg = ''

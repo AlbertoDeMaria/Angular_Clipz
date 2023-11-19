@@ -33,13 +33,23 @@ export class LoginComponent {
     this.showAlert = true
     this.alertMsg = 'Please wait! Login...'
     this.alertColor = 'blue'
+    this.inSubmission = true
 
     try {
       await this.auth.signInWithEmailAndPassword(
         this.loginForm.controls.email.value, this.loginForm.controls.password.value);
     } catch (e) {
+      this.inSubmission = false
+      this.alertMsg = 'An unexpected error occured. Please try again later.'
+      this.alertColor = 'red'
 
+      //console.log(e);
+
+      return
     }
+
+    this.alertMsg = 'Success! You are now logged in.'
+    this.alertColor = 'green'
   }
 
 }
